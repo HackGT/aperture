@@ -8,7 +8,25 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-
-    </Grid>
+    <NavigationView x:Name="Navigation" OpenPaneLength="48" IsPaneToggleButtonVisible="False" AlwaysShowHeader="False">
+        <NavigationView.MenuItems>
+            <NavigationViewItem Content="Portal" x:Name="Portal">
+                <NavigationViewItem.Icon>
+                    <SymbolIcon Symbol="Home"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <!--<NavigationViewItem Icon="AllApps" Content="All" Tag="SamplePage1" />
+            <NavigationViewItem Icon="OtherUser" Content="Visited" Tag="SamplePage2" />
+            <NavigationViewItem Content="Starred" Tag="SamplePage3" >
+                <NavigationViewItem.Icon>
+                    <SymbolIcon Symbol="OutlineStar"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+            <NavigationViewItemSeparator/>-->
+        </NavigationView.MenuItems>
+        <!--<NavigationView.AutoSuggestBox>
+            <AutoSuggestBox QueryIcon="Find" />
+        </NavigationView.AutoSuggestBox>-->
+        <Frame x:Name="contentFrame" />
+    </NavigationView>
 </Page>
