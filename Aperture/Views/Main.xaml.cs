@@ -22,6 +22,10 @@ namespace Aperture
         public Main()
         {
             this.InitializeComponent();
+
+            Frame rootFrame = Window.Current.Content as Frame;
+            MainPage page = rootFrame.Content as MainPage;
+            page.SportalFrame = SportalFrame;
         }
     }
 }

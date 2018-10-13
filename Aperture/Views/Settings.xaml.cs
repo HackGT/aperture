@@ -8,6 +8,7 @@ using Windows.Storage;
 using System.IO;
 using Windows.Storage.Pickers;
 using System.Diagnostics;
+using Windows.UI.Xaml;
 
 namespace Aperture
 {
@@ -25,19 +26,9 @@ namespace Aperture
         private async void SetUp()
         {
             ServerEnabled.IsOn = Settings.WebSocketsEnabled;
-            ServerPort.IsEnabled = Settings.WebSocketsEnabled;
-            ServerPort.Text = Settings.WebSocketsPort.ToString();
             ServerEnabled.Toggled += (sender, e) =>
             {
-                ServerPort.IsEnabled = ServerEnabled.IsOn;
                 Settings.WebSocketsEnabled = ServerEnabled.IsOn;
-            };
-            ServerPort.LostFocus += (sender, e) =>
-            {
-                short parsedPort = Settings.WebSocketsPort;
-                short.TryParse(ServerPort.Text, out parsedPort);
-                Settings.WebSocketsPort = parsedPort;
-                ServerPort.Text = parsedPort.ToString();
             };
 
             CopyEnabled.IsOn = Settings.ClipboardEnabled;
@@ -104,17 +95,6 @@ namespace Aperture
             set
             {
                 container.Values[nameof(WebSocketsEnabled)] = value;
-            }
-        }
-        public static short WebSocketsPort
-        {
-            get
-            {
-                return container.Values[nameof(WebSocketsPort)] as short? ?? 1337;
-            }
-            set
-            {
-                container.Values[nameof(WebSocketsPort)] = value;
             }
         }
         public static bool ClipboardEnabled

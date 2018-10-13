@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -56,11 +56,16 @@ namespace Aperture
             }
         }
 
+        public WebView SportalFrame;
         private async void Nfc_BadgeTapped(object sender, BadgeEventArgs e)
         {
             if (Settings.WebSocketsEnabled)
             {
-
+                // Run on UI thread
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                {
+                    await SportalFrame.InvokeScriptAsync("eval", new string[] { $"nfcService.onReceiveID(\"{e.uuid}\")" });
+                });
             }
             if (Settings.ClipboardEnabled)
             {

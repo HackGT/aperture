@@ -8,5 +8,5 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <WebView x:Name="WebFrame" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Source="https://sponsors.hack.gt" />
+    <WebView x:Name="SportalFrame" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Source="https://sponsors.hack.gt" />
 </Page>

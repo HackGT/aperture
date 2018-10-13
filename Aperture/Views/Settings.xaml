@@ -12,9 +12,9 @@
         <TextBlock Text="Settings" FontSize="30"/>
         
         <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBlock Text="WebSockets server" FontSize="24" Margin="0,20,0,10" />
-            <ToggleSwitch x:Name="ServerEnabled" Header="Server" IsOn="True" />
-            <TextBox x:Name="ServerPort" HorizontalAlignment="Left" Header="Port" Text="N/A" InputScope="Number" Width="75" />
+            <TextBlock Text="Badge integration" FontSize="24" Margin="0,20,0,10" />
+            <ToggleSwitch x:Name="ServerEnabled" Header="Show participant when badge is tapped" IsOn="True" />
+            <!--<TextBox x:Name="ServerPort" HorizontalAlignment="Left" Header="Port" Text="N/A" InputScope="Number" Width="75" />-->
 
             <TextBlock Text="Clipboard" FontSize="24" Margin="0,20,0,10" />
             <ToggleSwitch x:Name="CopyEnabled" Header="Copy badge ID to clipboard" IsOn="False" />
