@@ -19,6 +19,11 @@ namespace Aperture
         {
             this.InitializeComponent();
 
+            SetUp();
+        }
+
+        private async void SetUp()
+        {
             ServerEnabled.IsOn = Settings.WebSocketsEnabled;
             ServerPort.IsEnabled = Settings.WebSocketsEnabled;
             ServerPort.Text = Settings.WebSocketsPort.ToString();
@@ -43,36 +48,36 @@ namespace Aperture
 
             ScanLogEnabled.IsOn = Settings.ScanLogEnabled;
             SetPath.IsEnabled = Settings.ScanLogEnabled;
-            ScanLogLocation.Text = Settings.ScanLogLocation ?? "None set!";
+            ScanLogLocation.Text = (await Settings.GetScanLogLocation())?.Path ?? "None set!";
             ScanLogEnabled.Toggled += async (sender, e) =>
             {
-                if (ScanLogEnabled.IsOn && Settings.ScanLogLocation == null)
+                if (ScanLogEnabled.IsOn && (await Settings.GetScanLogLocation()) == null)
                 {
-                    string path = await pickSaveFile();
-                    if (string.IsNullOrEmpty(path))
+                    StorageFile file = await pickSaveFile();
+                    if (file == null)
                     {
                         ScanLogEnabled.IsOn = false;
                         return;
                     }
-                    Settings.ScanLogLocation = path;
-                    ScanLogLocation.Text = path;
+                    Settings.ScanLogLocation = file;
+                    ScanLogLocation.Text = file.Path;
                 }
                 Settings.ScanLogEnabled = ScanLogEnabled.IsOn;
                 SetPath.IsEnabled = ScanLogEnabled.IsOn;
             };
             SetPath.Click += async (sender, e) =>
             {
-                string path = await pickSaveFile();
-                if (string.IsNullOrEmpty(path))
+                StorageFile file = await pickSaveFile();
+                if (file == null)
                 {
                     return;
                 }
-                Settings.ScanLogLocation = path;
-                ScanLogLocation.Text = path;
+                Settings.ScanLogLocation = file;
+                ScanLogLocation.Text = file.Path;
             };
         }
 
-        private async Task<string> pickSaveFile()
+        private async Task<StorageFile> pickSaveFile()
         {
             FileSavePicker savePicker = new FileSavePicker();
             savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
@@ -82,7 +87,7 @@ namespace Aperture
             savePicker.SuggestedFileName = "badges";
             StorageFile file = await savePicker.PickSaveFileAsync();
 
-            return file?.Path;
+            return file;
         }
     }
 
@@ -134,16 +139,23 @@ namespace Aperture
                 container.Values[nameof(ScanLogEnabled)] = value;
             }
         }
-        public static string ScanLogLocation
+
+        public static StorageFile ScanLogLocation
         {
-            get
-            {
-                return container.Values[nameof(ScanLogLocation)] as string;
-            }
             set
             {
-                container.Values[nameof(ScanLogLocation)] = value;
+                string token = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(value, nameof(ScanLogLocation));
+                container.Values[nameof(ScanLogLocation)] = token;
             }
+        }
+        public async static Task<StorageFile> GetScanLogLocation()
+        {
+            string token = container.Values[nameof(ScanLogLocation)] as string;
+            if (string.IsNullOrEmpty(token))
+            {
+                return null;
+            }
+            return await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Notifications;
+using Windows.Storage;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -74,7 +75,8 @@ namespace Aperture
             }
             if (Settings.ScanLogEnabled)
             {
-
+                StorageFile logFile = await Settings.GetScanLogLocation();
+                await FileIO.AppendTextAsync(logFile, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}] Scanned badge: {e.uuid}\n");
             }
 
             var toastContent = new ToastContent()
