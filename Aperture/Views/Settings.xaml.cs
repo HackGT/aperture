@@ -66,6 +66,32 @@ namespace Aperture
                 Settings.ScanLogLocation = file;
                 ScanLogLocation.Text = file.Path;
             };
+
+            Frame rootFrame = Window.Current.Content as Frame;
+            MainPage page = rootFrame.Content as MainPage;
+            ResetNFC.Click += async (sender, e) =>
+            {
+                NFCLoading.IsActive = true;
+                NFCStatus.Text = "Loading...";
+                await page.NFCInit();
+                setNFCStatus();
+                NFCLoading.IsActive = false;
+            };
+            setNFCStatus();
+        }
+
+        private void setNFCStatus()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            MainPage page = rootFrame.Content as MainPage;
+            if (page.nfc.readerFound)
+            {
+                NFCStatus.Text = "Found and enabled";
+            }
+            else
+            {
+                NFCStatus.Text = "No reader detected";
+            }
         }
 
         private async Task<StorageFile> pickSaveFile()

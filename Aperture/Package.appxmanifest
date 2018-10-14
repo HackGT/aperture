@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="61298RyanPetschek.HackGTAperture" Publisher="CN=DAB9D8D9-22E1-40D5-8625-15CB29C3C7B2" Version="1.1.1.0" />
+  <Identity Name="61298RyanPetschek.HackGTAperture" Publisher="CN=DAB9D8D9-22E1-40D5-8625-15CB29C3C7B2" Version="1.1.3.0" />
   <mp:PhoneIdentity PhoneProductId="9e7a8144-7a85-452a-b7f5-8b53f1cd5c50" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>HackGT Aperture</DisplayName>
@@ -26,6 +26,7 @@
     <Capability Name="internetClient" />
     <Capability Name="privateNetworkClientServer" />
     <Capability Name="internetClientServer" />
+    <uap:Capability Name="sharedUserCertificates" />
     <DeviceCapability Name="proximity" />
   </Capabilities>
 </Package>

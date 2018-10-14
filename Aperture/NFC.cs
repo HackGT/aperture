@@ -39,15 +39,21 @@ namespace Aperture
         }
     }
 
-    class NFC
+    public class NFC
     {
         private static SmartCardReader reader;
+        public bool readerFound { get { return reader != null; } }
         public event EventHandler<BadgeEventArgs> BadgeTapped;
 
         protected virtual void OnBadgeTapped(BadgeEventArgs e) => BadgeTapped?.Invoke(this, e);
 
         public async Task Setup()
         {
+            if (reader != null)
+            {
+                reader.CardAdded -= Reader_CardAdded;
+            }
+
             var devices = await DeviceInformation.FindAllAsync(SmartCardReader.GetDeviceSelector(SmartCardReaderKind.Generic));
             foreach (DeviceInformation device in devices)
             {

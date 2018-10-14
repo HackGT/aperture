@@ -25,15 +25,18 @@ namespace Aperture
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public NFC nfc;
+
         public MainPage()
         {
             this.InitializeComponent();
 
-            var nfc = new NFC();
+            nfc = new NFC();
+            nfc.BadgeTapped += Nfc_BadgeTapped;
+
             new Task(async () =>
             {
-                await nfc.Setup();
-                nfc.BadgeTapped += Nfc_BadgeTapped;
+                await NFCInit();
             }).Start();
 
             Navigation.SelectedItem = Portal;
@@ -42,6 +45,11 @@ namespace Aperture
             {
                 contentFrame.Navigate(typeof(Main));
             };
+        }
+
+        public async Task NFCInit()
+        {
+            await nfc.Setup();
         }
 
         private void Navigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -64,7 +72,14 @@ namespace Aperture
                 // Run on UI thread
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    await SportalFrame.InvokeScriptAsync("eval", new string[] { $"nfcService.onReceiveID(\"{e.uuid}\")" });
+                    try
+                    {
+                        await SportalFrame.InvokeScriptAsync("eval", new string[] { $"nfcService.onReceiveID(\"{e.uuid}\")" });
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine($"{err.Message}: {err.StackTrace}");
+                    }
                 });
             }
             if (Settings.ClipboardEnabled)
@@ -75,13 +90,20 @@ namespace Aperture
 
                 // Clipboard operations must occur on the UI thread
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
-                    Clipboard.SetContent(package);
+                    try
+                    {
+                        Clipboard.SetContent(package);
+                    }
+                    catch (Exception err)
+                    {
+                        Debug.WriteLine($"{err.Message}: {err.StackTrace}");
+                    }
                 });
             }
             if (Settings.ScanLogEnabled)
             {
                 StorageFile logFile = await Settings.GetScanLogLocation();
-                await FileIO.AppendTextAsync(logFile, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}] Scanned badge: {e.uuid}\n");
+                await FileIO.AppendTextAsync(logFile, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}] Scanned badge: {e.uuid}\r\n");
             }
 
             var toastContent = new ToastContent()
