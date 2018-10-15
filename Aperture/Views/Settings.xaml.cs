@@ -37,8 +37,8 @@ namespace Aperture
                 Settings.ClipboardEnabled = CopyEnabled.IsOn;
             };
 
-            ScanLogEnabled.IsOn = Settings.ScanLogEnabled;
-            SetPath.IsEnabled = Settings.ScanLogEnabled;
+            ScanLogEnabled.IsOn = Settings.ScanLogEnabled && await Settings.GetScanLogLocation() != null;
+            SetPath.IsEnabled = ScanLogEnabled.IsOn;
             ScanLogLocation.Text = (await Settings.GetScanLogLocation())?.Path ?? "None set!";
             ScanLogEnabled.Toggled += async (sender, e) =>
             {
@@ -156,12 +156,19 @@ namespace Aperture
         }
         public async static Task<StorageFile> GetScanLogLocation()
         {
-            string token = container.Values[nameof(ScanLogLocation)] as string;
-            if (string.IsNullOrEmpty(token))
+            try
+            {
+                string token = container.Values[nameof(ScanLogLocation)] as string;
+                if (string.IsNullOrEmpty(token))
+                {
+                    return null;
+                }
+                return await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
+            }
+            catch (IOException)
             {
                 return null;
             }
-            return await Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFileAsync(token);
         }
     }
 }
