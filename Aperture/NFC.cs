@@ -74,7 +74,19 @@ namespace Aperture
             var card = cards[0];
 
             const int READ_AMOUNT = 80;
-            using (var connection = await card.ConnectAsync())
+
+            SmartCardConnection connection;
+            try
+            {
+                connection = await card.ConnectAsync();
+            }
+            catch (Exception) // This is literally the most specific exception sent for this error
+            {
+                // Couldn't open reader because tag was lifted too early
+                return;
+            }
+            
+            using (connection)
             {
                 const byte START_BLOCK = 4;
                 const byte MAX_READ_SIZE = 16;
