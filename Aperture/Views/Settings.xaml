@@ -8,32 +8,46 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel Margin="15,10,15,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <TextBlock Text="Settings" FontSize="30"/>
-        
-        <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBlock Text="NFC reader" FontSize="24" Margin="0,20,0,10" />
-            <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="NFCStatus" Text="Unknown" VerticalAlignment="Center" />
-                <ProgressRing x:Name="NFCLoading" IsActive="False" VerticalAlignment="Center" Margin="10,0,0,0" />
+    <Grid Margin="15,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TextBlock Text="Settings" FontSize="36" Margin="0,0,0,20" Height="60" VerticalAlignment="Top"/>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,45,0,0">
+            <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock Text="NFC reader" FontSize="24" Margin="0,20,0,10" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="NFCStatus" Text="Unknown" VerticalAlignment="Center" />
+                    <ProgressRing x:Name="NFCLoading" IsActive="False" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Button x:Name="ResetNFC" Content="Scan for NFC reader" Margin="0,10,0,0"></Button>
+
+                <TextBlock Text="HackGT Check-in integration" FontSize="24" Margin="0,20,0,10" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="CheckInAuthorizationStatus" Text="Not authorized" VerticalAlignment="Center" />
+                    <ProgressRing x:Name="CheckInAuthorizationLoading" IsActive="False" VerticalAlignment="Center" Margin="10,0,0,0" />
+                </StackPanel>
+                <Button x:Name="CheckInAuthorize" Content="Authorize" Margin="0,10,0,0"></Button>
+                <ToggleSwitch x:Name="CheckInEnabled" Header="Apply check-in status to user with specified tag when badge is tapped" IsOn="False" Margin="0,10,0,0" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="CheckInTag" HorizontalAlignment="Left" Header="Check-in tag" PlaceholderText="Tag name" Width="200" />
+                    <ToggleSwitch x:Name="CheckInAction" Header="Action" OnContent="Check in" OffContent="Check out" IsOn="True" VerticalAlignment="Stretch" Margin="20,0,0,0" />
+                </StackPanel>
+
+                <TextBlock Text="Badge integration" FontSize="24" Margin="0,20,0,10" />
+                <ToggleSwitch x:Name="ServerEnabled" Header="Show participant when badge is tapped" IsOn="True" />
+                <!--<TextBox x:Name="ServerPort" HorizontalAlignment="Left" Header="Port" Text="N/A" InputScope="Number" Width="75" />-->
+
+                <TextBlock Text="Clipboard" FontSize="24" Margin="0,20,0,10" />
+                <ToggleSwitch x:Name="CopyEnabled" Header="Copy badge ID to clipboard" IsOn="False" />
+
+                <TextBlock Text="Scan log" FontSize="24" Margin="0,20,0,10" />
+                <ToggleSwitch x:Name="ScanLogEnabled" Header="Output read badge IDs to a scan log" IsOn="False" />
+                <TextBlock x:Name="ScanLogLocation" Text="C:\Users\text.txt" Margin="0,0,0,10" />
+                <Button x:Name="SetPath" Content="Set location"></Button>
+
+                <TextBlock Text="About" FontSize="24" Margin="0,20,0,10" />
+                <TextBlock Text="Made with ❤️ by the HackGTeam. Thank you so much for making HackGT possible!" />
+                <TextBlock Text="Copyright © 2018 HackGT. Released under the MIT license." Margin="0,10,0,0" Height="45"  />
             </StackPanel>
-            <Button x:Name="ResetNFC" Content="Scan for NFC reader" Margin="0,10,0,0"></Button>
-            
-            <TextBlock Text="Badge integration" FontSize="24" Margin="0,20,0,10" />
-            <ToggleSwitch x:Name="ServerEnabled" Header="Show participant when badge is tapped" IsOn="True" />
-            <!--<TextBox x:Name="ServerPort" HorizontalAlignment="Left" Header="Port" Text="N/A" InputScope="Number" Width="75" />-->
-
-            <TextBlock Text="Clipboard" FontSize="24" Margin="0,20,0,10" />
-            <ToggleSwitch x:Name="CopyEnabled" Header="Copy badge ID to clipboard" IsOn="False" />
-
-            <TextBlock Text="Scan log" FontSize="24" Margin="0,20,0,10" />
-            <ToggleSwitch x:Name="ScanLogEnabled" Header="Output read badge IDs to a scan log" IsOn="False" />
-            <TextBlock x:Name="ScanLogLocation" Text="C:\Users\text.txt" Margin="0,0,0,10" />
-            <Button x:Name="SetPath" Content="Set location"></Button>
-
-            <TextBlock Text="About" FontSize="24" Margin="0,20,0,10" />
-            <TextBlock Text="Made with ❤️ by the HackGTeam. Thank you so much for making HackGT possible!" />
-            <TextBlock Text="Copyright © 2018 HackGT. Released under the MIT license." Margin="0,10,0,0"  />
-        </StackPanel>
-    </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Page>

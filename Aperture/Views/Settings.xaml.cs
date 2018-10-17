@@ -31,6 +31,102 @@ namespace Aperture
                 Settings.WebSocketsEnabled = ServerEnabled.IsOn;
             };
 
+            CheckInAction.IsOn = Settings.CheckInAction;
+            if (string.IsNullOrEmpty(Settings.AuthCookie))
+            {
+                CheckInAuthorizationStatus.Text = "Not authorized";
+                CheckInAuthorize.Content = "Authorize";
+                CheckInEnabled.IsEnabled = false;
+                CheckInEnabled.IsOn = false;
+                CheckInTag.Text = "";
+                CheckInTag.IsEnabled = false;
+                CheckInAction.IsEnabled = false;
+            }
+            else
+            {
+                CheckInAuthorizationStatus.Text = $"Logged in as {Settings.AuthUsername}";
+                CheckInAuthorize.Content = "Log out";
+                CheckInEnabled.IsEnabled = true;
+                CheckInEnabled.IsOn = Settings.CheckInEnabled;
+                CheckInTag.IsEnabled = Settings.CheckInEnabled;
+                CheckInAction.IsEnabled = Settings.CheckInEnabled;
+                CheckInTag.Text = Settings.CheckInTag ?? "";
+            }
+            CheckInAuthorize.Click += async (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(Settings.AuthCookie))
+                {
+                    // Ask for username / password and log in
+                    TextBox usernameBox = new TextBox()
+                    {
+                        AcceptsReturn = false,
+                        Header = "Username",
+                        IsSpellCheckEnabled = false,
+                    };
+                    PasswordBox passwordBox = new PasswordBox()
+                    {
+                        Header = "Password",
+                        Margin = new Thickness(0, 10, 0, 0),
+                    };
+                    var layout = new StackPanel();
+                    layout.Children.Add(usernameBox);
+                    layout.Children.Add(passwordBox);
+
+                    ContentDialog dialog = new ContentDialog();
+                    dialog.Content = layout;
+                    dialog.Title = "HackGT Check-in Login";
+                    dialog.IsSecondaryButtonEnabled = true;
+                    dialog.PrimaryButtonText = "OK";
+                    dialog.SecondaryButtonText = "Cancel";
+                    if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                    {
+                        CheckInAuthorizationLoading.IsActive = true;
+                        if (await CheckInAPI.Login(usernameBox.Text, passwordBox.Password))
+                        {
+                            CheckInAuthorizationStatus.Text = $"Logged in as {Settings.AuthUsername}";
+                            CheckInAuthorize.Content = "Log out";
+                            CheckInEnabled.IsEnabled = true;
+                            CheckInEnabled.IsOn = Settings.CheckInEnabled;
+                            CheckInTag.IsEnabled = Settings.CheckInEnabled;
+                            CheckInAction.IsEnabled = Settings.CheckInEnabled;
+                            CheckInTag.Text = Settings.CheckInTag ?? "";
+                        }
+                        else
+                        {
+                            CheckInAuthorizationStatus.Text = "Couldn't log in";
+                        }
+                        CheckInAuthorizationLoading.IsActive = false;
+                    }
+                }
+                else
+                {
+                    // Log out
+                    Settings.AuthCookie = null;
+                    Settings.AuthUsername = null;
+                    CheckInAuthorizationStatus.Text = "Not authorized";
+                    CheckInAuthorize.Content = "Authorize";
+                    CheckInEnabled.IsEnabled = false;
+                    CheckInEnabled.IsOn = false;
+                    CheckInTag.Text = "";
+                    CheckInTag.IsEnabled = false;
+                    CheckInAction.IsEnabled = false;
+                }
+            };
+            CheckInEnabled.Toggled += (sender, e) =>
+            {
+                Settings.CheckInEnabled = CheckInEnabled.IsOn;
+                CheckInTag.IsEnabled = CheckInEnabled.IsOn;
+                CheckInAction.IsEnabled = CheckInEnabled.IsOn;
+            };
+            CheckInTag.TextChanged += (sender, e) =>
+            {
+                Settings.CheckInTag = CheckInTag.Text;
+            };
+            CheckInAction.Toggled += (sender, e) =>
+            {
+                Settings.CheckInAction = CheckInAction.IsOn;
+            };
+
             CopyEnabled.IsOn = Settings.ClipboardEnabled;
             CopyEnabled.Toggled += (sender, e) =>
             {
@@ -121,6 +217,61 @@ namespace Aperture
             set
             {
                 container.Values[nameof(WebSocketsEnabled)] = value;
+            }
+        }
+        public static string AuthCookie
+        {
+            get
+            {
+                return container.Values[nameof(AuthCookie)] as string;
+            }
+            set
+            {
+                container.Values[nameof(AuthCookie)] = value;
+            }
+        }
+        public static string AuthUsername
+        {
+            get
+            {
+                return container.Values[nameof(AuthUsername)] as string;
+            }
+            set
+            {
+                container.Values[nameof(AuthUsername)] = value;
+            }
+        }
+        public static bool CheckInEnabled
+        {
+            get
+            {
+                return container.Values[nameof(CheckInEnabled)] as bool? ?? false;
+            }
+            set
+            {
+                container.Values[nameof(CheckInEnabled)] = value;
+            }
+        }
+        public static bool CheckInAction
+        {
+            get
+            {
+                return container.Values[nameof(CheckInAction)] as bool? ?? true;
+            }
+            set
+            {
+                container.Values[nameof(CheckInAction)] = value;
+            }
+        }
+        public static string CheckInTag
+        {
+            get
+            {
+                return container.Values[nameof(CheckInTag)] as string;
+            }
+            set
+            {
+                container.Values[nameof(CheckInTag)] = value;
             }
         }
         public static bool ClipboardEnabled

@@ -67,6 +67,73 @@ namespace Aperture
         public WebView SportalFrame;
         private async void Nfc_BadgeTapped(object sender, BadgeEventArgs e)
         {
+            if (!Settings.CheckInEnabled)
+            {
+                var toastContent = new ToastContent()
+                {
+                    Visual = new ToastVisual()
+                    {
+                        BindingGeneric = new ToastBindingGeneric()
+                        {
+                            Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = "Badge scanned"
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = "ID: " + e.uuid
+                                },
+                            }
+                        }
+                    }
+                };
+                var toast = new ToastNotification(toastContent.GetXml())
+                {
+                    ExpirationTime = DateTime.Now.AddSeconds(10)
+                };
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
+
+            if (Settings.CheckInEnabled)
+            {
+                string name;
+                if (Settings.CheckInAction)
+                {
+                    name = await CheckInAPI.CheckIn(e.uuid, Settings.CheckInTag);
+                }
+                else
+                {
+                    name = await CheckInAPI.CheckOut(e.uuid, Settings.CheckInTag);
+                }
+
+                var toastContent = new ToastContent()
+                {
+                    Visual = new ToastVisual()
+                    {
+                        BindingGeneric = new ToastBindingGeneric()
+                        {
+                            Children =
+                            {
+                                new AdaptiveText()
+                                {
+                                    Text = $"Checked {(Settings.CheckInAction ? "in" : "out")} user"
+                                },
+                                new AdaptiveText()
+                                {
+                                    Text = name != null ? $"Name: {name}" : "Invalid tag"
+                                },
+                            }
+                        }
+                    }
+                };
+                var toast = new ToastNotification(toastContent.GetXml())
+                {
+                    ExpirationTime = DateTime.Now.AddSeconds(10)
+                };
+                ToastNotificationManager.CreateToastNotifier().Show(toast);
+            }
             if (Settings.WebSocketsEnabled)
             {
                 // Run on UI thread
@@ -105,32 +172,6 @@ namespace Aperture
                 StorageFile logFile = await Settings.GetScanLogLocation();
                 await FileIO.AppendTextAsync(logFile, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}] Scanned badge: {e.uuid}\r\n");
             }
-
-            var toastContent = new ToastContent()
-            {
-                Visual = new ToastVisual()
-                {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = "Badge scanned"
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = "ID: " + e.uuid
-                            },
-                        }
-                    }
-                }
-            };
-            var toast = new ToastNotification(toastContent.GetXml())
-            {
-                ExpirationTime = DateTime.Now.AddSeconds(10)
-            };
-            ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
     }
 }
